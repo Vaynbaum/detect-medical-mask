@@ -67,7 +67,7 @@ def detect_by_iamge():
 # IMPLEMENTING LIVE DETECTION OF FACE MASK
 
 
-def detect_by_video(path: str):
+def detect_by_video(name_city:str, path:str):
     mymodel = load_model(NAME_MODEL)
     cap = cv2.VideoCapture(path)
     face_cascade = cv2.CascadeClassifier(NAME_FILE)
@@ -96,7 +96,7 @@ def detect_by_video(path: str):
                     cv2.putText(img, TYPE_LIST[0], ((x + w) // 2, y + h + 20), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (0, 255, 0), 1, cv2.LINE_AA)
 
-                cv2.imshow(TITLE, img)
+                cv2.imshow(name_city, img)
             if cv2.waitKey(10) == 27:
                 break
         i += 1

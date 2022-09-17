@@ -3,6 +3,7 @@ from tkinter import LEFT
 from neural_network.neural_network import *
 
 FORM = tk.Tk()
+FORM.title(TITLE)
 FORM.geometry("500x300")
 FORM.config(bg="#ffdb8f")
 
@@ -29,7 +30,8 @@ button.pack(side=LEFT, expand=1)
 
 # choices available with user.
 def check(*args):
-    neural_net.OpenVideo(videos.get(variable.get()))
+    city = variable.get()
+    neural_net.OpenVideo(city, videos.get(city))
 
 
 videos = {
