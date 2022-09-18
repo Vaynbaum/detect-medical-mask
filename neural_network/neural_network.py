@@ -6,6 +6,6 @@ class NeuralNetwork:
     def OpenFromWebCamera(self):
         main()
 
-    def OpenVideo(self, name_city, path):
+    def OpenVideo(self, path):
         if path != "":
-            detect_by_video(name_city, path)
+            detect_by_video(path)

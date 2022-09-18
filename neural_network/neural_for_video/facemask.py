@@ -4,6 +4,7 @@ from keras.models import Sequential, load_model
 from keras.utils import image_utils
 import cv2
 from keras.preprocessing.image import ImageDataGenerator
+from neural_network.common import draw_text
 
 from neural_network.const import TITLE, TYPE_LIST
 
@@ -66,20 +67,20 @@ def detect_by_iamge():
 
 # IMPLEMENTING LIVE DETECTION OF FACE MASK
 
-
-def detect_by_video(name_city:str, path:str):
+def detect_by_video(path:str):
     mymodel = load_model(NAME_MODEL)
     cap = cv2.VideoCapture(path)
     face_cascade = cv2.CascadeClassifier(NAME_FILE)
     i = 0
-
     while cap.isOpened():
+        res = 0
         _, img = cap.read()
         if img is None:
             break
         if i == 0:
             img = cv2.resize(img, (WIDTH, HEIGHT))
             face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=4)
+            cnt_without = 0
             for (x, y, w, h) in face:
                 face_img = img[y : y + h, x : x + w]
                 cv2.imwrite(PATH_TEMP, face_img)
@@ -91,16 +92,24 @@ def detect_by_video(name_city:str, path:str):
                     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
                     cv2.putText(img, TYPE_LIST[1], ((x + w) // 2, y + h + 20), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (0, 0, 255), 1, cv2.LINE_AA)
+                    cnt_without+=1
                 else:
                     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     cv2.putText(img, TYPE_LIST[0], ((x + w) // 2, y + h + 20), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (0, 255, 0), 1, cv2.LINE_AA)
-
-                cv2.imshow(name_city, img)
+            try:
+                cnt_all = face.size/4
+                res = int(cnt_without/(cnt_all)*100)
+                draw_text(img,f'No mask: {res}%',cv2.FONT_HERSHEY_SIMPLEX,(0,0),1,1,(255, 0, 0),(255, 255, 255))
+                
+            except:
+                pass
+            cv2.imshow(TITLE, img)
+                
             if cv2.waitKey(10) == 27:
                 break
         i += 1
-        i %= 10
+        i %= 5
 
     cap.release()
     cv2.destroyAllWindows()

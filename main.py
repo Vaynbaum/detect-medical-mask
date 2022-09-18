@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import LEFT
+from tkinter.filedialog import askopenfilename
 from neural_network.neural_network import *
 
 FORM = tk.Tk()
@@ -31,17 +32,23 @@ button.pack(side=LEFT, expand=1)
 # choices available with user.
 def check(*args):
     city = variable.get()
-    neural_net.OpenVideo(city, videos.get(city))
+    if city == "Файл...":
+        filetypes = [("Video File1", ".mp4"), ("Video File2", ".avi"), ("Video File3", ".MOV")]
+        filename = askopenfilename(filetypes = filetypes)
+        neural_net.OpenVideo(filename)
+    else:
+        neural_net.OpenVideo(videos.get(city))
 
 
 videos = {
     "Лондон": "assets/videos/2.mp4",
     "Нью-Йорк": "assets/videos/3.mp4",
     "Санкт-Петербург": "assets/videos/4.mp4",
+    "Файл...": "",
 }
 
-variable = tk.StringVar(value="Выбрать камеру")
-variable.set("Выбрать камеру")
+variable = tk.StringVar(value="Выбрать видео")
+variable.set("Выбрать видео")
 variable.trace_add("write", check)
 
 #  creating widget

@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import cv2
 from threading import Thread
+from neural_network.common import draw_text
 
 from neural_network.const import TITLE, TYPE_LIST
 
@@ -56,12 +57,17 @@ def get_output(interpreter, output_details, i_detail, cam, shape):
 
 
 def draw_and_show(box, classes, scores, num, frame):
+    cnt_all = 0
+    cnt_without = 0
+    res = None
     for i in range(int(num[0])):
         if scores[0][i] > 0.8:
+            cnt_all += 1
             y, x, bottom, right = box[0][i]
             x, right = int(x * WIDTH), int(right * WIDTH)
             y, bottom = int(y * HEIGHT), int(bottom * HEIGHT)
             class_type = TYPE_LIST[int(classes[0][i])]
+            cnt_without += 1 if class_type != TYPE_LIST[0] else 0
             color = (0, 255, 0) if class_type == TYPE_LIST[0] else (0, 0, 255)
             label_size = cv2.getTextSize(class_type, cv2.FONT_HERSHEY_DUPLEX, 0.5, 1)
             cv2.rectangle(frame, (x, y), (right, bottom), color, thickness=2)
@@ -78,7 +84,9 @@ def draw_and_show(box, classes, scores, num, frame):
                 1,
                 cv2.LINE_AA,
             )
-    return frame
+            if cnt_all > 0:
+                res = int(cnt_without / (cnt_all) * 100) 
+    return frame, res
 
 
 def main():
@@ -100,7 +108,18 @@ def main():
         if output == None:
             pass
         else:
-            frames = draw_and_show(*output, frame)
+            frames, res = draw_and_show(*output, frame)
+            if res is not None:
+                draw_text(
+                    frames,
+                    f"No mask: {res}%",
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    (0, 0),
+                    1,
+                    1,
+                    (255, 0, 0),
+                    (255, 255, 255),
+                )
             cv2.imshow(TITLE, frames)
         if cv2.waitKey(10) == 27:
             done = True
