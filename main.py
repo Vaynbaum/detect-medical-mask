@@ -12,7 +12,7 @@ neural_net = NeuralNetwork()
 
 
 def link():
-    neural_net.OpenFromWebCamera()
+    neural_net.SaveVideo('assets/videos/2.mp4','result.avi')
 
 
 button = tk.Button(
@@ -58,18 +58,18 @@ dropdown.configure(width=20, height=3, bd=0, bg="#00bfff", underline=0, cursor="
 dropdown.pack(side=LEFT, expand=1)
 
 
-def focus_inb(e=None):
-    button.configure(fg="#000")
-    button.configure(bg="#fff")
+# def focus_inb(e=None):
+#     button.configure(fg="#000")
+#     button.configure(bg="#fff")
 
 
-def focus_outb(e=None):
-    button.configure(bg="#00bfff")
-    button.configure(fg="#000")
+# def focus_outb(e=None):
+#     button.configure(bg="#00bfff")
+#     button.configure(fg="#000")
 
 
-button.bind("<Enter>", focus_inb)
-button.bind("<Leave>", focus_outb)
+# button.bind("<Enter>", focus_inb)
+# button.bind("<Leave>", focus_outb)
 
 
 FORM.mainloop()
