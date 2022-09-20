@@ -5,7 +5,7 @@
 ## About the app
 The application allows you to `recognize` people in `masks` and `without them` by `video` from the device's camera and by downloaded videos.
 
-<img width="376" alt="image" src="https://user-images.githubusercontent.com/78900834/190906010-4ffae097-5faf-42a5-802a-e9f4a805e369.png">
+<img width="290" alt="image" src="https://user-images.githubusercontent.com/78900834/191351382-90c4cc7b-3b86-4911-9f17-b0949cb42d37.png">
 
 <img width="544" alt="image" src="https://user-images.githubusercontent.com/78900834/190906592-a1271cc2-723e-422d-9651-3fe62570a7b5.png">
 
