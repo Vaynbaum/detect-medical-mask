@@ -14,7 +14,7 @@ filename=None
 def create_out_path(filename:str):
     words = filename.split('.')
     string = "".join(words[:len(words)-1])
-    return f'out/{string}.avi'
+    return f'{string}_output.avi'
 
 def link(*args):
     neural_net.OpenVideo('assets/demo.mp4')
