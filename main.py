@@ -1,4 +1,5 @@
 import tkinter as tk
+from time import sleep
 from tkinter.filedialog import askopenfilename
 
 from neural_network.neural_network import *
@@ -21,12 +22,22 @@ def link(*args):
 def link2(*args):
     global filename
     filename = askopenfilename(filetypes=filetypes)
+    if filename != "":
+        button3['state'] = tk.NORMAL
+        button4['state'] = tk.NORMAL
 def link3(*args):
     if filename is not None:
         neural_net.OpenVideo(filename)
 def link4(*args):
+    label.config(text="Video Processing...")
+    FORM.update()
     if filename is not None:
         neural_net.SaveVideo(filename, create_out_path(filename))
+    label.config(text="Processing completed successfully")
+    FORM.update()
+    sleep(2)
+    label.config(text="")
+    FORM.update()
 button = tk.Button(
     FORM,
     command=link,
@@ -61,6 +72,7 @@ button3 = tk.Button(
     bg="#00bfff",
     underline=0,
     cursor="hand2",
+    state=tk.DISABLED
 )  # Инициализация кнопки
 button3.grid(column=1, row=1, padx=20, pady=20)
 button4 = tk.Button(
@@ -73,9 +85,11 @@ button4 = tk.Button(
     bg="#00bfff",
     underline=0,
     cursor="hand2",
+    state=tk.DISABLED
 )  # Инициализация кнопки
 button4.grid(column=0, row=0, padx=20, pady=20)
-
+label = tk.Label(text="", bg="#ffdb8f")
+label.place(x=40, y=85)
 filetypes = [
             ("Video File1", "*.mp4"),
             ("Video File2", "*.avi")

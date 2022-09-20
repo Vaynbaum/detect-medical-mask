@@ -83,8 +83,6 @@ def save_video(path: str, out_path: str):
         img = detect_by_video(mymodel, face_cascade,img)
         if img is not None:
             out.write(img)
-        if cv2.waitKey(10) == 27:
-            break
     cap.release()
     out.release()
     cv2.destroyAllWindows()
