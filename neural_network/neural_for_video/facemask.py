@@ -74,7 +74,7 @@ def init_model(path: str):
 
 def save_video(path: str, out_path: str):
     mymodel, cap, face_cascade= init_model(path)
-    out = cv2.VideoWriter("output.avi",
+    out = cv2.VideoWriter(out_path,
     cv2.VideoWriter_fourcc(*"MJPG"), 30,(WIDTH,HEIGHT))
     while cap.isOpened():
         _, img = cap.read()

@@ -1,75 +1,104 @@
 import tkinter as tk
-from tkinter import LEFT
 from tkinter.filedialog import askopenfilename
+
 from neural_network.neural_network import *
 
 FORM = tk.Tk()
 FORM.title(TITLE)
-FORM.geometry("500x300")
+FORM.geometry("380x200")
 FORM.config(bg="#ffdb8f")
 
 neural_net = NeuralNetwork()
+filename=None
 
+def create_out_path(filename:str):
+    words = filename.split('.')
+    string = "".join(words[:len(words)-1])
+    return f'out/{string}.avi'
 
-def link():
-    neural_net.SaveVideo('assets/videos/2.mp4','result.avi')
-
-
+def link(*args):
+    neural_net.OpenVideo('assets/demo.mp4')
+def link2(*args):
+    global filename
+    filename = askopenfilename(filetypes=filetypes)
+def link3(*args):
+    if filename is not None:
+        neural_net.OpenVideo(filename)
+def link4(*args):
+    if filename is not None:
+        neural_net.SaveVideo(filename, create_out_path(filename))
 button = tk.Button(
     FORM,
     command=link,
     padx=20,
     pady=20,
-    text="Вебкамера",
+    text="Open demo video",
     bd=0,
     bg="#00bfff",
     underline=0,
     cursor="hand2",
 )  # Инициализация кнопки
-button.pack(side=LEFT, expand=1)
+button.grid(column=0, row=1, padx=20, pady=20)
+button2 = tk.Button(
+    FORM,
+    command=link2,
+    padx=20,
+    pady=20,
+    text="Open file",
+    bd=0,
+    bg="#00bfff",
+    underline=0,
+    cursor="hand2",
+)  # Инициализация кнопки
+button2.grid(column=1, row=0, padx=20, pady=20)
+button3 = tk.Button(
+    FORM,
+    command=link3,
+    padx=20,
+    pady=20,
+    text="Watch video",
+    bd=0,
+    bg="#00bfff",
+    underline=0,
+    cursor="hand2",
+)  # Инициализация кнопки
+button3.grid(column=1, row=1, padx=20, pady=20)
+button4 = tk.Button(
+    FORM,
+    command=link4,
+    padx=20,
+    pady=20,
+    text="Save processed video",
+    bd=0,
+    bg="#00bfff",
+    underline=0,
+    cursor="hand2",
+)  # Инициализация кнопки
+button4.grid(column=0, row=0, padx=20, pady=20)
+
+filetypes = [
+            ("Video File1", "*.mp4"),
+            ("Video File2", "*.avi")
+            ]
 
 
-# choices available with user.
-def check(*args):
-    city = variable.get()
-    if city == "Файл...":
-        filetypes = [("Video File1", ".mp4"), ("Video File2", ".avi"), ("Video File3", ".MOV")]
-        filename = askopenfilename(filetypes = filetypes)
-        neural_net.OpenVideo(filename)
-    else:
-        neural_net.OpenVideo(videos.get(city))
+def focus_inb(event):
+    event.widget.configure(fg="#000")
+    event.widget.configure(bg="#fff")
 
 
-videos = {
-    "Лондон": "assets/videos/2.mp4",
-    "Нью-Йорк": "assets/videos/3.mp4",
-    "Санкт-Петербург": "assets/videos/4.mp4",
-    "Файл...": "",
-}
-
-variable = tk.StringVar(value="Выбрать видео")
-variable.set("Выбрать видео")
-variable.trace_add("write", check)
-
-#  creating widget
-dropdown = tk.OptionMenu(FORM, variable, *videos)
-dropdown.configure(width=20, height=3, bd=0, bg="#00bfff", underline=0, cursor="hand2")
-# positioning widget
-dropdown.pack(side=LEFT, expand=1)
+def focus_outb(event):
+    event.widget.configure(bg="#00bfff")
+    event.widget.configure(fg="#000")
 
 
-# def focus_inb(e=None):
-#     button.configure(fg="#000")
-#     button.configure(bg="#fff")
-
-
-# def focus_outb(e=None):
-#     button.configure(bg="#00bfff")
-#     button.configure(fg="#000")
-
-
-# button.bind("<Enter>", focus_inb)
-# button.bind("<Leave>", focus_outb)
-
+button.bind("<Enter>", focus_inb)
+button.bind("<Leave>", focus_outb)
+button2.bind("<Enter>", focus_inb)
+button2.bind("<Leave>", focus_outb)
+button3.bind("<Enter>", focus_inb)
+button3.bind("<Leave>", focus_outb)
+button4.bind("<Enter>", focus_inb)
+button4.bind("<Leave>", focus_outb)
 
 FORM.mainloop()
