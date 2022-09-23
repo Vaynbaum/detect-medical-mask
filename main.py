@@ -10,6 +10,7 @@ FORM = tk.Tk()
 FORM.title(TITLE)
 FORM.geometry("570x420")
 FORM.config(bg="#CFDBDA")
+FORM.resizable(width=0, height=0)
 
 neural_net = NeuralNetwork()
 filename=None
