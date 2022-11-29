@@ -1,16 +1,19 @@
+import json
 import tkinter as tk
-from time import sleep
-from tkinter import W
+from tkinter import LEFT, TOP, W, Button, Label, Toplevel
 from tkinter.filedialog import askopenfilename
 from tkinter.font import Font
-
+import os.path
+from pathlib import Path
 from neural_network.neural_network import *
+
 
 FORM = tk.Tk()
 FORM.title(TITLE)
 FORM.geometry("570x350")
 FORM.config(bg="#CFDBDA")
 FORM.resizable(width=0, height=0)
+
 
 neural_net = NeuralNetwork()
 filename = None
@@ -20,7 +23,7 @@ fontt = Font(family="Segoe UI Symbol", size=16)
 def create_out_path(filename: str):
     words = filename.split(".")
     string = "".join(words[: len(words) - 1])
-    return f"{string}_output.avi"
+    return f"{string}_output{Path(filename).suffix}"
 
 
 def cut_filename(filename: str):
@@ -41,22 +44,92 @@ def link2(*args):
 
 def link3(*args):
     if filename is not None:
-        neural_net.OpenVideo(filename)
+        s = neural_net.OpenVideo(filename)
+        words = filename.split(".")
+        string = "".join(words[: len(words) - 1])
+        fs = f"{string}_watch.json"
+        with open(fs, "w", encoding="utf8") as f:
+            json.dump(s, f, indent=4)
 
 
-def link4(*args):
+def save(f):
     label.place(x=195, y=265)
     label.config(text="Video Processing...")
     FORM.update()
-    if filename is not None:
-        neural_net.SaveVideo(filename, create_out_path(filename))
+    neural_net.SaveVideo(filename, f)
     label.place(x=135, y=265)
     label.config(text="Processing completed successfully")
     FORM.update()
 
 
+def link4(*args):
+    if filename is not None:
+        f = create_out_path(filename)
+        if os.path.exists(f):
+            createPopUp(
+                f,
+                "Saving videos",
+                f"A file named {f} exists \nShould I overwrite the file?",
+            )
+        else:
+            save(f)
+
+
+def createPopUp(f, t, m):
+    answer = Toplevel(FORM)
+    fontAns = Font(family="Segoe UI Symbol", size=10)
+    answer.title(t)
+    answer.config(bg="#CFDBDA")
+    answer.geometry("400x200")
+    answer.resizable(width=0, height=0)
+    answer.grab_set()
+    # Yes/No
+    def yesbut():
+        answer.destroy()
+        save(f)
+
+    def nobut():
+        answer.destroy()
+
+    label = Label(
+        answer,
+        wraplength=300,
+        justify=LEFT,
+        font=fontAns,
+        bg="#CFDBDA",
+        text=m,
+    )
+    label.pack(pady=30, side=TOP)
+    b1 = Button(
+        answer,
+        text="Yes",
+        font=fontAns,
+        command=yesbut,
+        width=12,
+        bd=0,
+        pady=5,
+        bg="#8AAAA5",
+        underline=0,
+        cursor="hand2",
+    )
+    b2 = Button(
+        answer,
+        text="No",
+        font=fontAns,
+        command=nobut,
+        width=12,
+        pady=5,
+        bd=0,
+        bg="#8AAAA5",
+        underline=0,
+        cursor="hand2",
+    )
+    b1.place(x=70, y=150)
+    b2.place(x=240, y=150)
+
+
 # button.grid(column=0, row=3, pady=4, padx=25)
-button2 = tk.Button(
+button2 = Button(
     FORM,
     command=link2,
     padx=17,
