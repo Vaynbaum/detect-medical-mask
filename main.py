@@ -1,6 +1,7 @@
 import json
 import tkinter as tk
 from tkinter import LEFT, TOP, W, Button, Label, Toplevel
+from tkinter import filedialog
 from tkinter.filedialog import askopenfilename
 from tkinter.font import Font
 import os.path
@@ -69,7 +70,7 @@ def link4(*args):
             createPopUp(
                 f,
                 "Saving videos",
-                f"A file named {f} exists \nShould I overwrite the file?",
+                f"A file named {f} exists \nOverwrite the file?",
             )
         else:
             save(f)
@@ -90,6 +91,14 @@ def createPopUp(f, t, m):
 
     def nobut():
         answer.destroy()
+                
+    def savebut():
+        pth=filedialog.asksaveasfilename(filetypes=filetypes)
+        if pth:
+            answer.destroy()
+            if not Path(pth).suffix:
+                pth+=Path(filename).suffix
+            save(pth)
 
     label = Label(
         answer,
@@ -124,8 +133,21 @@ def createPopUp(f, t, m):
         underline=0,
         cursor="hand2",
     )
-    b1.place(x=70, y=150)
-    b2.place(x=240, y=150)
+    b3 = Button(
+        answer,
+        text="Choose path",
+        font=fontAns,
+        command=savebut,
+        width=12,
+        pady=5,
+        bd=0,
+        bg="#8AAAA5",
+        underline=0,
+        cursor="hand2",
+    )
+    b1.place(x=30,y=150)
+    b2.place(x=280,y=150)
+    b3.place(x=155, y=150)
 
 
 # button.grid(column=0, row=3, pady=4, padx=25)

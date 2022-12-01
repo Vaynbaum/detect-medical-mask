@@ -113,6 +113,8 @@ def watch_video(path: str):
                 cv2.imshow(TITLE, img)
             if cv2.waitKey(10) == 27:
                 break
+            if cv2.getWindowProperty(TITLE, cv2.WND_PROP_VISIBLE) < 1:
+                break
         i += 1
         i %= 5
     cap.release()
@@ -163,50 +165,57 @@ def detect_by_video(mymodel, face_cascade, img, obj=None, width=WIDTH, height=HE
     is_obj = obj is not None
     if is_obj:
         obj["objects"] = []
-        objects=[]
+        objects = []
+    i = 0
     for (x, y, w, h) in face:
-        face_img = img[y : y + h, x : x + w]
-        # cv2.imwrite(PATH_TEMP, face_img)
-        # test_image = image_utils.load_img(PATH_TEMP, target_size=(150, 150, 3))
-        # test_image = image_utils.img_to_array(test_image)
-        # cv2.imwrite('after_inter.jpg', test_image)
+        if i == 0:
+            face_img = img[y : y + h, x : x + w]
+            cv2.imwrite(PATH_TEMP, face_img)
+            test_image = image_utils.load_img(PATH_TEMP, target_size=(150, 150, 3))
+            test_image = image_utils.img_to_array(test_image)
 
-        face_img = im.fromarray(face_img)
-        face_img = blue(face_img)
-        test_image = image_utils.img_to_array(face_img)
-        test_image = resize_local_mean(test_image, (150, 150, 3))
-        # cv2.imwrite(PATH_TEMP, test_image)
+            # face_img = im.fromarray(face_img)
+            # face_img = blue(face_img)
+            # test_image = image_utils.img_to_array(face_img)
+            # test_image = resize_local_mean(test_image, (150, 150, 3))
+            # cv2.imwrite(PATH_TEMP, test_image)
 
-        test_image = np.expand_dims(test_image, axis=0)
-        pred = mymodel.predict(test_image)[0][0]
-        text = TYPE_LIST[1] if pred == 1 else TYPE_LIST[0]
-        color = (0, 0, 255) if pred == 1 else (0, 255, 0)
-        cnt_without += 1 if pred == 1 else 0
-        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(
-            img,
-            text,
-            (x, y + h + 20 * int(width // WIDTH)),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            int(width // WIDTH),
-            color,
-            int(width // WIDTH),
-            cv2.LINE_AA,
-        )
-        if is_obj:
-            objects.append(
-                {
-                    "class": text,
-                    "coord": {"x": int(x), "y": int(y), 'width': int(w), 'height': int(h)},
-                    "probability": random.randrange(0, 100),
-                }
+            test_image = np.expand_dims(test_image, axis=0)
+            pred = mymodel.predict(test_image)[0][0]
+            text = TYPE_LIST[1] if pred == 1 else TYPE_LIST[0]
+            color = (0, 0, 255) if pred == 1 else (0, 255, 0)
+            cnt_without += 1 if pred == 1 else 0
+            cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+            cv2.putText(
+                img,
+                text,
+                (x, y + h + 20 * int(width // WIDTH)),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                int(width // WIDTH),
+                color,
+                int(width // WIDTH),
+                cv2.LINE_AA,
             )
-            
+            if is_obj:
+                objects.append(
+                    {
+                        "class": int(pred),
+                        "coord": {
+                            "x": int(x),
+                            "y": int(y),
+                            "width": int(w),
+                            "height": int(h),
+                        },
+                        "probability": random.randrange(0, 100),
+                    }
+                )
+        i += 1
+        i %= 3
     try:
         cnt_all = face.size / 4
         if is_obj:
             obj["count"] = int(cnt_all)
-            obj["objects"]=objects
+            obj["objects"] = objects
         res = int(cnt_without / (cnt_all) * 100)
         draw_text(
             img,
