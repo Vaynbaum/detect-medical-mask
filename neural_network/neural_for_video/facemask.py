@@ -9,8 +9,6 @@ from keras.preprocessing.image import ImageDataGenerator
 from pathlib import Path
 from neural_network.const import TITLE, TYPE_LIST
 import numpy as np
-from skimage.transform import resize_local_mean
-from PIL import Image as im
 
 WIDTH = 720
 HEIGHT = 480
@@ -75,7 +73,7 @@ def init_model(path: str):
 
 
 def save_video(path: str, out_path: str):
-
+    statistics = list()
     mymodel, cap, face_cascade = init_model(path)
     width = int(cap.get(CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(CAP_PROP_FRAME_HEIGHT))
@@ -89,12 +87,17 @@ def save_video(path: str, out_path: str):
         _, img = cap.read()
         if img is None:
             break
-        img = detect_by_video(mymodel, face_cascade, img, width=width, height=height)
+        obj = {}
+        img = detect_by_video(
+            mymodel, face_cascade, img, obj, width=width, height=height
+        )
+        statistics.append(obj)
         if img is not None:
             out.write(img)
     cap.release()
     out.release()
     cv2.destroyAllWindows()
+    return statistics
 
 
 def watch_video(path: str):
@@ -158,14 +161,12 @@ def blue(img):
     return arr
 
 
-def detect_by_video(mymodel, face_cascade, img, obj=None, width=WIDTH, height=HEIGHT):
+def detect_by_video(mymodel, face_cascade, img, obj, width=WIDTH, height=HEIGHT):
     img = cv2.resize(img, (width, height))
     face = face_cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=4)
     cnt_without = 0
-    is_obj = obj is not None
-    if is_obj:
-        obj["objects"] = []
-        objects = []
+    obj["objects"] = []
+    objects = []
     i = 0
     for (x, y, w, h) in face:
         if i == 0:
@@ -196,26 +197,24 @@ def detect_by_video(mymodel, face_cascade, img, obj=None, width=WIDTH, height=HE
                 int(width // WIDTH),
                 cv2.LINE_AA,
             )
-            if is_obj:
-                objects.append(
-                    {
-                        "class": int(pred),
-                        "coord": {
-                            "x": int(x),
-                            "y": int(y),
-                            "width": int(w),
-                            "height": int(h),
-                        },
-                        "probability": random.randrange(0, 100),
-                    }
-                )
+            objects.append(
+                {
+                    "class": int(pred),
+                    "coord": {
+                        "x": int(x),
+                        "y": int(y),
+                        "width": int(w),
+                        "height": int(h),
+                    },
+                    "probability": random.randrange(0, 100),
+                }
+            )
         i += 1
         i %= 3
     try:
         cnt_all = face.size / 4
-        if is_obj:
-            obj["count"] = int(cnt_all)
-            obj["objects"] = objects
+        obj["count"] = int(cnt_all)
+        obj["objects"] = objects
         res = int(cnt_without / (cnt_all) * 100)
         draw_text(
             img,

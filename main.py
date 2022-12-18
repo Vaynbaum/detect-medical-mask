@@ -57,7 +57,14 @@ def save(f):
     label.place(x=195, y=265)
     label.config(text="Video Processing...")
     FORM.update()
-    neural_net.SaveVideo(filename, f)
+    
+    s = neural_net.SaveVideo(filename, f)
+    words = filename.split(".")
+    string = "".join(words[: len(words) - 1])
+    fs = f"{string}_watch.json"
+    with open(fs, "w", encoding="utf8") as f:
+        json.dump(s, f, indent=4)
+        
     label.place(x=135, y=265)
     label.config(text="Processing completed successfully")
     FORM.update()
@@ -91,13 +98,14 @@ def createPopUp(f, t, m):
 
     def nobut():
         answer.destroy()
-                
+
     def savebut():
-        pth=filedialog.asksaveasfilename(filetypes=filetypes)
+        initialfile = f.split('/')[-1]
+        pth = filedialog.asksaveasfilename(filetypes=filetypes,initialfile=initialfile)
         if pth:
             answer.destroy()
             if not Path(pth).suffix:
-                pth+=Path(filename).suffix
+                pth += Path(filename).suffix
             save(pth)
 
     label = Label(
@@ -135,19 +143,19 @@ def createPopUp(f, t, m):
     )
     b3 = Button(
         answer,
-        text="Choose path",
+        text="New name and path",
         font=fontAns,
         command=savebut,
-        width=12,
+        width=17,
         pady=5,
         bd=0,
         bg="#8AAAA5",
         underline=0,
         cursor="hand2",
     )
-    b1.place(x=30,y=150)
-    b2.place(x=280,y=150)
-    b3.place(x=155, y=150)
+    b1.place(x=25, y=150)
+    b2.place(x=285, y=150)
+    b3.place(x=137, y=150)
 
 
 # button.grid(column=0, row=3, pady=4, padx=25)

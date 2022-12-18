@@ -6,4 +6,4 @@ class NeuralNetwork:
         return watch_video(path)
 
     def SaveVideo(self, path_in, path_out):
-        save_video(path_in, path_out)
+        return save_video(path_in, path_out)
